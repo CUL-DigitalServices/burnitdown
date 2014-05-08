@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Burn it down!</title>
+        <link rel="stylesheet" href="/shared/vendor/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/shared/vendor/css/highslide.css">
+        <link rel="stylesheet" href="/css/dashboard.css">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div id="dashboard-feed-container" class="row">
+                <div id="dashboard-issue-chart-container"></div>
+                <div id="dashboard-issue-feed-container" class="col-xs-6"><!-- --></div>
+                <div id="dashboard-pull-feed-container" class="col-xs-6"><!-- --></div>
+            </div>
+        </div>
+
+        <script type="text/html" id='dashboard-issue-feed-template'>
+            <h3>Issue events</h3>
+            <ul class="list-group">
+                <%
+                    _.each(events, function(ev, index) {
+                %>
+                    <li class="list-group-item clearfix">
+                        <a href="<%= ev.actor.html_url %>" target="_blank" title="<%= ev.actor.login %>">
+                            <img class="dashboard-feed-thumbnail pull-left" src="<%= ev.actor.avatar_url %>" alt="<%= ev.actor.login %>"/>
+                        </a>
+                        <div class="pull-left">
+                            <%= ev.event %> - <a href="<%= ev.issue.html_url %>" target="_blank">#<%= ev.issue.number %></a>.
+                            <small class="clearfix"><%= $.timeago(new Date(ev.created_at)) %></small>
+                        </div>
+                    </li>
+                <%
+                    });
+                %>
+            </ul>
+        </script>
+
+        <script type="text/html" id='dashboard-pull-feed-template'>
+            <h3>Pull request comments</h3>
+            <ul class="list-group">
+                <%
+                    _.each(events, function(ev, index) {
+                %>
+                    <li class="list-group-item clearfix">
+                        <a href="<%= ev.user.html_url %>" target="_blank" title="<%= ev.user.login %>">
+                            <img class="dashboard-feed-thumbnail pull-left" src="<%= ev.user.avatar_url %>" alt="<%= ev.user.login %>"/>
+                        </a>
+                        <div class="pull-left">
+                            Commented on <a href="<%= ev.html_url %>" target="_blank">#<%= ev.pull_request_url.split('/').pop() %></a>.
+                            <small class="clearfix"><%= $.timeago(new Date(ev.created_at)) %></small>
+                        </div>
+                    </li>
+                <%
+                    });
+                %>
+            </ul>
+        </script>
+
+        <script data-main="shared/bd/js/bd.bootstrap.js" data-loadmodule="js/dashboard.js" src="shared/vendor/js/require-jquery.js"></script>
+    </body>
+</html>

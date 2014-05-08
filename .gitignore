@@ -1,0 +1,4 @@
+.DS_STORE
+.editorconfig
+node_modules/*
+!node_modules/bd-*
