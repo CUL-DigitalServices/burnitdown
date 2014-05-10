@@ -13,11 +13,51 @@
  * permissions and limitations under the License.
  */
 
-.dashboard-feed-thumbnail {
+#dashboard-summary-container {
+    margin-top: 50px;
+}
+
+#dashboard-summary-container .dashboard-summary .bd-circle {
+    border-radius: 250px;
+    display: inline-block;
+    font-size: 200px;
+    height: 300px;
+    line-height: 300px;
+    margin-bottom: 50px;
+    margin-top: 20px;
+    width: 300px;
+}
+
+#dashboard-summary-container .dashboard-summary:nth-child(1) .bd-circle {
+    background-color: #e11d21;
+    color: #FFF;
+}
+
+#dashboard-summary-container .dashboard-summary:nth-child(2) .bd-circle {
+    background-color: #75c3ff;
+    color: #FFF;
+}
+
+#dashboard-summary-container .dashboard-summary:nth-child(3) .bd-circle {
+    background-color: #009800;
+    color: #FFF;
+}
+
+#dashboard-events-feed-container .list-group-item > div {
+    padding-left: 0;
+}
+
+#dashboard-events-feed-container .dashboard-feed-thumbnail {
     border: 1px solid #bbb;
-    height: 50px;
+    /*height: 50px;*/
     margin-right: 7px;
-    width: 50px;
+    width: 100%;
+}
+
+#dashboard-events-feed-container .dashboard-feed-comment {
+    font-size: 13px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 
 #dashboard-issue-chart-container {
