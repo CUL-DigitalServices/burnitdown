@@ -29,12 +29,12 @@
 }
 
 #dashboard-summary-container .dashboard-summary:nth-child(1) .bd-circle {
-    background-color: #e11d21;
+    background-color: #E11D21;
     color: #FFF;
 }
 
 #dashboard-summary-container .dashboard-summary:nth-child(2) .bd-circle {
-    background-color: #75c3ff;
+    background-color: #75C3FF;
     color: #FFF;
 }
 
@@ -48,8 +48,7 @@
 }
 
 #dashboard-events-feed-container .dashboard-feed-thumbnail {
-    border: 1px solid #bbb;
-    /*height: 50px;*/
+    border: 1px solid #BBB;
     margin-right: 7px;
     width: 100%;
 }

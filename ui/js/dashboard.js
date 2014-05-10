@@ -140,7 +140,7 @@ define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', '
 
     var setIntervals = function() {
         setInterval(getEvents, 60000); // Get new events every minute
-        //setInterval(getIssues, 60000 * 5); // Get new chart data every 5 minutes
+        setInterval(getIssues, 60000 * 10); // Get new issue data every 10 minutes
     };
 
     var initDashBoard = function() {
