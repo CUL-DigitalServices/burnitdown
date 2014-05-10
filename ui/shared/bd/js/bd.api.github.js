@@ -121,7 +121,13 @@ define(['exports', 'jquery'], function(exports, $) {
     var sortEvents = function(eventA, eventB) {
         var eventATime = new Date(eventA['created_at']).getTime();
         var eventBTime = new Date(eventB['created_at']).getTime();
-        return eventATime < eventBTime;
+        if (eventATime < eventBTime) {
+            return 1;
+        } else if (eventATime > eventBTime) {
+            return -1;
+        } else {
+            return 0;
+        }
     };
 
     var getClosedIssuesForRepositories = exports.getClosedIssuesForRepositories = function(repositories, callback) {

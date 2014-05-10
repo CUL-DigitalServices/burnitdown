@@ -33,8 +33,6 @@ define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', '
     };
 
     var generateIssuesChart = function(openIssues, closedIssues) {
-        console.log(openIssues);
-        console.log(closedIssues);
         var dateCounts = {};
         $.each(openIssues, function(i, open) {
             var createdAt = new Date(open.created_at);
