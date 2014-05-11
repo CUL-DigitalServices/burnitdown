@@ -44,23 +44,51 @@ define(['exports', 'jquery'], function(exports, $) {
     };
 
     var getEventsForRepository = exports.getEventsForRepository = function(user, project, callback) {
-        // Get the pull request comment events
-        getPullCommentEventsForRepository(user, project, function(err, pullCommentEvents) {
+        // Get the issue comment request events
+        getIssueCommentEventsForRepository(user, project, function(err, issueCommentEvents) {
             if (err) {
                 return callback(err);
             }
 
-            // Get the issue events
-            getIssueEventsForRepository(user, project, function(err, issueEvents) {
+            // Get the pull request comment events
+            getPullCommentEventsForRepository(user, project, function(err, pullCommentEvents) {
                 if (err) {
                     return callback(err);
                 }
 
-                // Merge and sort them chronologically
-                var events = pullCommentEvents.concat(issueEvents);
-                events.sort(sortEvents);
-                return callback(null, events);
+                // Get the issue events
+                getIssueEventsForRepository(user, project, function(err, issueEvents) {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    // Merge and sort them chronologically
+                    var events = issueCommentEvents.concat(pullCommentEvents);
+                    events = events.concat(issueEvents);
+                    events.sort(sortEvents);
+                    return callback(null, events);
+                });
             });
+        });
+    };
+
+    var getIssueCommentEventsForRepository = exports.getIssueCommentEventsForRepository = function(user, project, callback) {
+        $.ajax({
+            'url': 'https://api.github.com/repos/' + user + '/' + project + '/issues/comments',
+            'method': 'GET',
+            'data': {
+                'direction': 'desc',
+                'sort': 'created'
+            },
+            'headers': {
+                'Authorization': 'token ' + require('bd.core').data.token
+            },
+            'success': function(issueCommentEvents) {
+                $.each(issueCommentEvents, function(issueCommentEventIndex, issueCommentEvent) {
+                    issueCommentEvent.type = 'issue-comment-event';
+                });
+                callback(null, issueCommentEvents);
+            }
         });
     };
 
@@ -110,6 +138,11 @@ define(['exports', 'jquery'], function(exports, $) {
                 'Authorization': 'token ' + require('bd.core').data.token
             },
             'success': function(issueEvents) {
+                // Filter out `subscribed` and `assigned` events, as they are covered
+                // by the comments events
+                issueEvents = _.filter(issueEvents, function(issueEvent) {
+                    return (issueEvent.event !== 'subscribed' && issueEvent.event !== 'mentioned');
+                });
                 $.each(issueEvents, function(issueEventIndex, issueEvent) {
                     issueEvent.type = 'issue-event';
                 });

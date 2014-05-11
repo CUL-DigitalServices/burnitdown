@@ -51,6 +51,19 @@
                                     <%= ev.body.substring(0, 500) %>
                                 </div>
                             </div>
+                        <% } else if (ev.type === 'issue-comment-event') { %>
+                            <div class="col-xs-2">
+                                <a href="<%= ev.user.html_url %>" target="_blank" title="<%= ev.user.login %>">
+                                    <img class="dashboard-feed-thumbnail" src="<%= ev.user.avatar_url %>" alt="<%= ev.user.login %>"/>
+                                </a>
+                            </div>
+                            <div class="col-xs-10">
+                                <%= ev.user.login %> commented on <a href="<%= ev.html_url %>" target="_blank">#<%= ev.issue_url.split('/').pop() %></a>
+                                <small class="clearfix"><%= $.timeago(new Date(ev.created_at)) %></small>
+                                <div class="text-muted dashboard-feed-comment">
+                                    <%= ev.body.substring(0, 500) %>
+                                </div>
+                            </div>
                         <% } else if (ev.type === 'issue-event') { %>
                             <div class="col-xs-2">
                                 <a href="<%= ev.actor.html_url %>" target="_blank" title="<%= ev.actor.login %>">

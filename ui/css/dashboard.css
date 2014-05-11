@@ -57,6 +57,7 @@
     font-size: 13px;
     margin-bottom: 5px;
     margin-top: 5px;
+    word-wrap: break-word;
 }
 
 #dashboard-issue-chart-container {
