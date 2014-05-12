@@ -53,6 +53,11 @@
     width: 100%;
 }
 
+/* Ensure that embedded images from markdown comments scale nicely */
+#dashboard-events-feed-container .dashboard-feed-comment img {
+    width: 100%;
+}
+
 #dashboard-events-feed-container .dashboard-feed-comment {
     font-size: 13px;
     margin-bottom: 5px;
