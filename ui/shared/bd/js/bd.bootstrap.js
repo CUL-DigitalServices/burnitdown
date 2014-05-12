@@ -25,6 +25,7 @@ requirejs.config({
         'bootstrap': 'vendor/js/bootstrap',
         'highcharts': 'vendor/js/highcharts',
         'history': 'vendor/js/jquery.history',
+        'markdown': 'vendor/js/markdown',
         'parseurl': 'vendor/js/jquery.parseurl',
         'underscore': 'vendor/js/underscore',
         'timeago': 'vendor/js/jquery.timeago',

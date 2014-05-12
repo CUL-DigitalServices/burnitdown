@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-define(['exports', 'jquery'], function(exports, $) {
+define(['exports', 'jquery', 'markdown'], function(exports, $) {
 
     var getEventsForRepositories = exports.getEventsForRepositories = function(repositories, callback) {
         var currentRepository = 0;
@@ -25,6 +25,13 @@ define(['exports', 'jquery'], function(exports, $) {
                 if (err) {
                     return callback(err);
                 }
+
+                _.each(repositoryEvents, function(evt) {
+                    if (_.isString(evt.body)) {
+                        // Parse the markdown so we can embed memes, because everybody knows dev can only communicate in memes
+                        evt.body = markdown.toHTML(evt.body);
+                    }
+                });
 
                 // Add the repository events to the overall list of events
                 events = events.concat(repositoryEvents);
