@@ -13,35 +13,20 @@
  * permissions and limitations under the License.
  */
 
-define(['jquery', 'bd.core', 'timeago', 'highcharts', 'history'], function ($, db) {
+define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', 'parseurl'], function ($, _, db) {
 
-    var repository = null;
+    var repositories = null;
 
-    var getIssueEvents = function() {
-        // Render the issue event feed
-        db.api.github.getIssueEventsForRepository(repository.split('/')[0], repository.split('/')[1], function(err, events) {
-            if (err) {
-                return console.error('Error retrieving event feed');
-            }
-
-            // Render the event feed
-            var template = $("#dashboard-issue-feed-template").html();
-            $("#dashboard-feed-container #dashboard-issue-feed-container").html(_.template(template, {
-                'events': events
-            }));
-        });
-    };
-
-    var getPullCommentEvents = function() {
+    var getEvents = function() {
         // Render the pull request event feed
-        db.api.github.getPullCommentEventsForRepository(repository.split('/')[0], repository.split('/')[1], function(err, events) {
+        db.api.github.getEventsForRepositories(repositories, function(err, events) {
             if (err) {
                 return console.error('Error retrieving event feed');
             }
 
             // Render the event feed
-            var template = $("#dashboard-pull-feed-template").html();
-            $("#dashboard-feed-container #dashboard-pull-feed-container").html(_.template(template, {
+            var template = $("#dashboard-events-feed-template").html();
+            $("#dashboard-events-feed-container").html(_.template(template, {
                 'events': events
             }));
         });
@@ -99,7 +84,7 @@ define(['jquery', 'bd.core', 'timeago', 'highcharts', 'history'], function ($, d
 
         $('#dashboard-issue-chart-container').highcharts({
             title: {
-                text: 'Open issues over time for ' + repository,
+                text: 'Open issues over time',
                 x: -20
             },
             xAxis: {
@@ -110,12 +95,6 @@ define(['jquery', 'bd.core', 'timeago', 'highcharts', 'history'], function ($, d
                     text: 'Open issues'
                 }
             },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle',
-                borderWidth: 0
-            },
             series: [{
                 name: 'Open issues',
                 data: yAxisData
@@ -123,32 +102,54 @@ define(['jquery', 'bd.core', 'timeago', 'highcharts', 'history'], function ($, d
         });
     };
 
-    var getIssuesForChart = function() {
-        db.api.github.getOpenIssues(repository.split('/')[0], repository.split('/')[1], function(err, open) {
-            var openIssues = open;
-            // Get the open and closed issues in the milestone
-            db.api.github.getClosedIssues(repository.split('/')[0], repository.split('/')[1], function(err, closed) {
-                var closedIssues = closed;
+    var getIssues = function() {
+        db.api.github.getOpenIssuesForRepositories(repositories, function(err, openIssues) {
+            db.api.github.getClosedIssuesForRepositories(repositories, function(err, closedIssues) {
+
+                // Set the number of open issues
+                $('#bd-circle-open').text(openIssues.length);
+
+                // Set the number of issues in review
+                var inReview = 0;
+                $.each(openIssues, function(openIssueIndex, openIssue) {
+                    $.each(openIssue.labels, function(labelIndex, label) {
+                        if (label.name.toLowerCase() === 'to review') {
+                            inReview++;
+                        }
+                    });
+                });
+                $('#bd-circle-review').text(inReview);
+
+                // Set the number of issues closed today
+                var closedToday = 0;
+                $.each(closedIssues, function(closedIssueIndex, closedIssue) {
+                    var closedAt = new Date(closedIssue.closed_at).getTime();
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    if (closedAt > today.getTime()) {
+                        closedToday++;
+                    }
+                });
+                $('#bd-circle-closed').text(closedToday);
+
+                // Generate the chart
                 generateIssuesChart(openIssues, closedIssues);
             });
         });
     };
 
     var setIntervals = function() {
-        setInterval(getIssueEvents, 60000 * 2); // Get new issue events every 2 minutes
-        setInterval(getPullCommentEvents, 60000); // Get new pull request comments every minute
-        setInterval(getIssuesForChart, 60000 * 5); // Get new chart data every 5 minutes
+        setInterval(getEvents, 60000); // Get new events every minute
+        setInterval(getIssues, 60000 * 10); // Get new issue data every 10 minutes
     };
 
     var initDashBoard = function() {
-        repository = window.location.search.split('=')[1];
-        if (!repository) {
-            repository = 'oaeproject/3akai-ux';
-            History.pushState(null, null, '?repo=' + repository);
-        }
-        getIssuesForChart();
-        getIssueEvents();
-        getPullCommentEvents();
+        repositories = $.url().param('repo') || ['oaeproject/3akai-ux', 'oaeproject/Hilary'];
+        repositories = _.isArray(repositories) ? repositories : [repositories];
+        $('#bd-title').text(repositories.join(' | '));
+
+        getIssues();
+        getEvents();
         setIntervals();
     };
 
