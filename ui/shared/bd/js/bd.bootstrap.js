@@ -33,6 +33,7 @@ requirejs.config({
         'bd.api': 'bd/js/bd.api',
         'bd.api.github': 'bd/js/bd.api.github',
         'bd.api.travis': 'bd/js/bd.api.travis',
+        'bd.api.util': 'bd/js/bd.api.util',
 
         'bd.core': 'bd/js/bd.core',
     },

@@ -21,9 +21,9 @@
  * This module is intended to be referenced as a *plugin*, not a regular module. Do not depend on this directly, instead depend
  * on `oae.core`, which invokes this plugin, and also efficiently pre-loads many third-party dependencies.
  */
-define(['bd.api.github', 'bd.api.travis'],
+define(['bd.api.github', 'bd.api.travis', 'bd.api.util'],
 
-    function(githubAPI, travisAPI) {
+    function(githubAPI, travisAPI, utilAPI) {
 
         /*!
          * Object containing all of the available OAE API modules and their functions, as well as some
@@ -33,6 +33,7 @@ define(['bd.api.github', 'bd.api.travis'],
             'api': {
                 'github': githubAPI,
                 'travis': travisAPI,
+                'util': utilAPI
             },
             'data': {}
         };

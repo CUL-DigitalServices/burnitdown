@@ -13,8 +13,17 @@
  * permissions and limitations under the License.
  */
 
-define(['exports', 'jquery', 'markdown'], function(exports, $) {
+define(['exports', 'jquery'], function(exports, $) {
 
+    /**
+     * [getBuildsForRepository description]
+     *
+     * @param  {[type]}   user     [description]
+     * @param  {[type]}   project  [description]
+     * @param  {Function} callback [description]
+     *
+     * @return {[type]}            [description]
+     */
     var getBuildsForRepository = exports.getBuildsForRepository = function(user, project, callback) {
         $.ajax({
             'url': 'https://api.travis-ci.org/repos/' + user + '/' + project + '/builds',
@@ -27,12 +36,21 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
                     build.type = 'build-event';
                     build.user = user;
                     build.project = project;
+                    build.displayDate = build.finished_at;
                 });
                 callback(null, builds.builds);
             }
         });
     };
 
+    /**
+     * [getBuildsForRepositories description]
+     *
+     * @param  {[type]}   repositories [description]
+     * @param  {Function} callback     [description]
+     *
+     * @return {[type]}                [description]
+     */
     var getBuildsForRepositories = exports.getBuildsForRepositories = function(repositories, callback) {
         var currentRepository = 0;
         var builds = [];

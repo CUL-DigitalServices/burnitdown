@@ -15,6 +15,14 @@
 
 define(['exports', 'jquery', 'markdown'], function(exports, $) {
 
+    /**
+     * [getEventsForRepositories description]
+     *
+     * @param  {[type]}   repositories [description]
+     * @param  {Function} callback     [description]
+     *
+     * @return {[type]}                [description]
+     */
     var getEventsForRepositories = exports.getEventsForRepositories = function(repositories, callback) {
         var currentRepository = 0;
         var events = [];
@@ -26,10 +34,11 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
                     return callback(err);
                 }
 
-                _.each(repositoryEvents, function(evt) {
-                    if (_.isString(evt.body)) {
+                _.each(repositoryEvents, function(ev) {
+                    ev.displayDate = ev.created_at;
+                    if (_.isString(ev.body)) {
                         // Parse the markdown so we can embed memes, because everybody knows dev can only communicate in memes
-                        evt.body = markdown.toHTML(evt.body);
+                        ev.body = markdown.toHTML(ev.body);
                     }
                 });
 
@@ -38,8 +47,6 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
 
                 currentRepository++;
                 if (currentRepository === repositories.length) {
-                    // Sort all events chronologically
-                    events.sort(sortEvents);
                     return callback(null, events);
                 } else {
                     getNextRepository();
@@ -50,7 +57,16 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
         getNextRepository();
     };
 
-    var getEventsForRepository = exports.getEventsForRepository = function(user, project, callback) {
+    /**
+     * [getEventsForRepository description]
+     *
+     * @param  {[type]}   user     [description]
+     * @param  {[type]}   project  [description]
+     * @param  {Function} callback [description]
+     *
+     * @return {[type]}            [description]
+     */
+    var getEventsForRepository = function(user, project, callback) {
         // Get the issue comment request events
         getIssueCommentEventsForRepository(user, project, function(err, issueCommentEvents) {
             if (err) {
@@ -72,14 +88,22 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
                     // Merge and sort them chronologically
                     var events = issueCommentEvents.concat(pullCommentEvents);
                     events = events.concat(issueEvents);
-                    events.sort(sortEvents);
                     return callback(null, events);
                 });
             });
         });
     };
 
-    var getIssueCommentEventsForRepository = exports.getIssueCommentEventsForRepository = function(user, project, callback) {
+    /**
+     * [getIssueCommentEventsForRepository description]
+     *
+     * @param  {[type]}   user     [description]
+     * @param  {[type]}   project  [description]
+     * @param  {Function} callback [description]
+     *
+     * @return {[type]}            [description]
+     */
+    var getIssueCommentEventsForRepository = function(user, project, callback) {
         $.ajax({
             'url': 'https://api.github.com/repos/' + user + '/' + project + '/issues/comments',
             'method': 'GET',
@@ -93,6 +117,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
             'success': function(issueCommentEvents) {
                 $.each(issueCommentEvents, function(issueCommentEventIndex, issueCommentEvent) {
                     issueCommentEvent.type = 'issue-comment-event';
+                    issueCommentEvent.displayDate = issueCommentEvent.created_at;
                 });
                 callback(null, issueCommentEvents);
             }
@@ -108,7 +133,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
      *
      * @return {[type]}            [description]
      */
-    var getPullCommentEventsForRepository = exports.getPullCommentEventsForRepository = function(user, project, callback) {
+    var getPullCommentEventsForRepository = function(user, project, callback) {
         $.ajax({
             'url': 'https://api.github.com/repos/' + user + '/' + project + '/pulls/comments',
             'method': 'GET',
@@ -137,7 +162,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
      *
      * @return {[type]}            [description]
      */
-    var getIssueEventsForRepository = exports.getIssueEventsForRepository = function(user, project, callback) {
+    var getIssueEventsForRepository = function(user, project, callback) {
         $.ajax({
             'url': 'https://api.github.com/repos/' + user + '/' + project + '/issues/events',
             'method': 'GET',
@@ -158,18 +183,14 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
         });
     };
 
-    var sortEvents = function(eventA, eventB) {
-        var eventATime = new Date(eventA['created_at']).getTime();
-        var eventBTime = new Date(eventB['created_at']).getTime();
-        if (eventATime < eventBTime) {
-            return 1;
-        } else if (eventATime > eventBTime) {
-            return -1;
-        } else {
-            return 0;
-        }
-    };
-
+    /**
+     * [getClosedIssuesForRepositories description]
+     *
+     * @param  {[type]}   repositories [description]
+     * @param  {Function} callback     [description]
+     *
+     * @return {[type]}                [description]
+     */
     var getClosedIssuesForRepositories = exports.getClosedIssuesForRepositories = function(repositories, callback) {
         var currentRepository = 0;
         var closedIssues = [];
@@ -205,7 +226,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
      *
      * @return {[type]}            [description]
      */
-    var getClosedIssuesForRepository = exports.getClosedIssuesForRepository = function(user, project, callback) {
+    var getClosedIssuesForRepository = function(user, project, callback) {
         var closedIssues = [];
 
         var getIssues = function(_page, _callback) {
@@ -236,10 +257,21 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
 
         // Get the closed issues
         getIssues(1, function() {
+            _.each(closedIssues, function(issue) {
+                issue.displayDate = issue.created_at;
+            });
             callback(null, closedIssues);
         });
     };
 
+    /**
+     * [getOpenIssuesForRepositories description]
+     *
+     * @param  {[type]}   repositories [description]
+     * @param  {Function} callback     [description]
+     *
+     * @return {[type]}                [description]
+     */
     var getOpenIssuesForRepositories = exports.getOpenIssuesForRepositories = function(repositories, callback) {
         var currentRepository = 0;
         var openIssues = [];
@@ -275,7 +307,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
      *
      * @return {[type]}            [description]
      */
-    var getOpenIssuesForRepository = exports.getOpenIssuesForRepository = function(user, project, callback) {
+    var getOpenIssuesForRepository = function(user, project, callback) {
         var openIssues = [];
 
         var getIssues = function(_page, _callback) {
@@ -306,6 +338,9 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
 
         // Get the closed issues
         getIssues(1, function() {
+            _.each(openIssues, function(issue) {
+                issue.displayDate = issue.created_at;
+            });
             callback(null, openIssues);
         });
     };

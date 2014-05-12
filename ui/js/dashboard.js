@@ -13,33 +13,30 @@
  * permissions and limitations under the License.
  */
 
-define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', 'parseurl'], function ($, _, db) {
+define(['jquery', 'bd.core', 'underscore', 'timeago', 'highcharts', 'history', 'parseurl'], function ($, bd, _) {
 
+    // Cache the repositories to display data for
     var repositories = null;
 
-    var sortEvents = function(eventA, eventB) {
-        var eventATime = eventA['created_at'] ? new Date(eventA['created_at']).getTime() : new Date(eventA['finished_at']).getTime();
-        var eventBTime = eventB['created_at'] ? new Date(eventB['created_at']).getTime() : new Date(eventB['finished_at']).getTime();
-        if (eventATime < eventBTime) {
-            return 1;
-        } else if (eventATime > eventBTime) {
-            return -1;
-        } else {
-            return 0;
-        }
-    };
-
+    /**
+     * Get all event and build data for the specified repositories and render the event feed
+     */
     var getEvents = function() {
         // Get the Github event feed
-        db.api.github.getEventsForRepositories(repositories, function(err, events) {
+        bd.api.github.getEventsForRepositories(repositories, function(err, events) {
             if (err) {
                 return console.error('Error retrieving event feed');
             }
 
-            // Get the TravisCI builds
-            db.api.travis.getBuildsForRepositories(repositories, function(err, builds) {
+            // Get the Travis CI builds
+            bd.api.travis.getBuildsForRepositories(repositories, function(err, builds) {
+                if (err) {
+                    return console.error('Error retrieving Travis CI build feed');
+                }
+
                 events = events.concat(builds);
-                events.sort(sortEvents);
+                events.sort(bd.api.util.sortByDisplayDate);
+
                 // Render the event feed
                 var template = $("#dashboard-events-feed-template").html();
                 $("#dashboard-events-feed-container").html(_.template(template, {
@@ -49,6 +46,12 @@ define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', '
         });
     };
 
+    /**
+     * Render a chart that shows the open issues over time
+     *
+     * @param  {Object[]}    openIssues      Array of open issues
+     * @param  {Object[]}    closedIssues    Array of closed issues
+     */
     var generateIssuesChart = function(openIssues, closedIssues) {
         var dateCounts = {};
         $.each(openIssues, function(i, open) {
@@ -119,9 +122,12 @@ define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', '
         });
     };
 
+    /**
+     * Get the list of open and closed issues to render a chart
+     */
     var getIssues = function() {
-        db.api.github.getOpenIssuesForRepositories(repositories, function(err, openIssues) {
-            db.api.github.getClosedIssuesForRepositories(repositories, function(err, closedIssues) {
+        bd.api.github.getOpenIssuesForRepositories(repositories, function(err, openIssues) {
+            bd.api.github.getClosedIssuesForRepositories(repositories, function(err, closedIssues) {
 
                 // Set the number of open issues
                 $('#bd-circle-open').text(openIssues.length);
@@ -155,11 +161,17 @@ define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', '
         });
     };
 
+    /**
+     * Set the intervals at which the feeds should refresh
+     */
     var setIntervals = function() {
         setInterval(getEvents, 60000); // Get new events every minute
         setInterval(getIssues, 60000 * 10); // Get new issue data every 10 minutes
     };
 
+    /**
+     * Initialize the dashboard
+     */
     var initDashBoard = function() {
         repositories = $.url().param('repo') || ['oaeproject/3akai-ux', 'oaeproject/Hilary'];
         repositories = _.isArray(repositories) ? repositories : [repositories];
