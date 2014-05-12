@@ -17,18 +17,35 @@ define(['jquery', 'underscore', 'bd.core', 'timeago', 'highcharts', 'history', '
 
     var repositories = null;
 
+    var sortEvents = function(eventA, eventB) {
+        var eventATime = eventA['created_at'] ? new Date(eventA['created_at']).getTime() : new Date(eventA['finished_at']).getTime();
+        var eventBTime = eventB['created_at'] ? new Date(eventB['created_at']).getTime() : new Date(eventB['finished_at']).getTime();
+        if (eventATime < eventBTime) {
+            return 1;
+        } else if (eventATime > eventBTime) {
+            return -1;
+        } else {
+            return 0;
+        }
+    };
+
     var getEvents = function() {
-        // Render the pull request event feed
+        // Get the Github event feed
         db.api.github.getEventsForRepositories(repositories, function(err, events) {
             if (err) {
                 return console.error('Error retrieving event feed');
             }
 
-            // Render the event feed
-            var template = $("#dashboard-events-feed-template").html();
-            $("#dashboard-events-feed-container").html(_.template(template, {
-                'events': events
-            }));
+            // Get the TravisCI builds
+            db.api.travis.getBuildsForRepositories(repositories, function(err, builds) {
+                events = events.concat(builds);
+                events.sort(sortEvents);
+                // Render the event feed
+                var template = $("#dashboard-events-feed-template").html();
+                $("#dashboard-events-feed-container").html(_.template(template, {
+                    'events': events
+                }));
+            });
         });
     };
 

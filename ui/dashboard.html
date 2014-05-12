@@ -37,8 +37,8 @@
         <script type="text/html" id='dashboard-events-feed-template'>
             <ul class="list-group">
                 <% _.each(events, function(ev, index) { %>
-                    <li class="row list-group-item clearfix">
-                        <% if (ev.type === 'pull-comment-event') { %>
+                    <% if (ev.type === 'pull-comment-event') { %>
+                        <li class="row list-group-item clearfix">
                             <div class="col-xs-2">
                                 <a href="<%= ev.user.html_url %>" target="_blank" title="<%= ev.user.login %>">
                                     <img class="dashboard-feed-thumbnail" src="<%= ev.user.avatar_url %>" alt="<%= ev.user.login %>"/>
@@ -51,7 +51,9 @@
                                     <%= ev.body.substring(0, 500) %>
                                 </div>
                             </div>
-                        <% } else if (ev.type === 'issue-comment-event') { %>
+                        </li>
+                    <% } else if (ev.type === 'issue-comment-event') { %>
+                        <li class="row list-group-item clearfix">
                             <div class="col-xs-2">
                                 <a href="<%= ev.user.html_url %>" target="_blank" title="<%= ev.user.login %>">
                                     <img class="dashboard-feed-thumbnail" src="<%= ev.user.avatar_url %>" alt="<%= ev.user.login %>"/>
@@ -61,10 +63,12 @@
                                 <%= ev.user.login %> commented on <a href="<%= ev.html_url %>" target="_blank">#<%= ev.issue_url.split('/').pop() %></a>
                                 <small class="clearfix"><%= $.timeago(new Date(ev.created_at)) %></small>
                                 <div class="text-muted dashboard-feed-comment">
-                                    <%= ev.body.substring(0, 500) %>
+                                    <%= ev.body %>
                                 </div>
                             </div>
-                        <% } else if (ev.type === 'issue-event') { %>
+                        </li>
+                    <% } else if (ev.type === 'issue-event') { %>
+                        <li class="row list-group-item clearfix">
                             <div class="col-xs-2">
                                 <a href="<%= ev.actor.html_url %>" target="_blank" title="<%= ev.actor.login %>">
                                     <img class="dashboard-feed-thumbnail pull-left" src="<%= ev.actor.avatar_url %>" alt="<%= ev.actor.login %>"/>
@@ -74,8 +78,24 @@
                                 <%= ev.actor.login %> <%= ev.event %> - <a href="<%= ev.issue.html_url %>" target="_blank">#<%= ev.issue.number %></a>
                                 <small class="clearfix"><%= $.timeago(new Date(ev.created_at)) %></small>
                             </div>
-                        <% } %>
-                    </li>
+                        </li>
+                    <% } else if (ev.type === 'build-event') { %>
+                        <li class="row list-group-item clearfix dashboard-travis-<%= ev.state %>">
+                            <div class="col-xs-2">
+                                <img class="dashboard-feed-thumbnail pull-left" src="https://travis-ci.com/img/travis-mascot-200px.png" alt="Travis CI"/>
+                            </div>
+                            <div class="col-xs-10">
+                                <%= ev.user %>/<%= ev.project %>
+                                <% if (ev.pull_request_number) { %>
+                                    <a href="https://travis-ci.org/<%= ev.user %>/<%= ev.project %>/builds/<%= ev.id %>" title="" target="_blank">#<%= ev.pull_request_number %></a> - <%= ev.pull_request_title %> -
+                                <% } else { %>
+                                    master
+                                <% } %>
+                                <%= ev.state %>.
+                                <small class="clearfix"><%= $.timeago(new Date(ev.finished_at)) %></small>
+                            </div>
+                        </li>
+                    <% } %>
                 <% }); %>
             </ul>
         </script>
