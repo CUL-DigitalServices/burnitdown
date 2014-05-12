@@ -28,11 +28,48 @@
                             <div id="bd-circle-closed" class="bd-circle"><!-- --></div>
                         </div>
                     </div>
+                    <div id="dashboard-lastfm-container"></div>
                     <div id="dashboard-issue-chart-container"><!-- --></div>
                 </div>
                 <div id="dashboard-events-feed-container" class="col-xs-2"><!-- --></div>
             </div>
         </div>
+
+        <script type="text/html" id="dashboard-lastfm-template">
+            <% _.each(users, function(user, userID) { %>
+                <% if (user !== undefined) { %>
+                    <div class="pull-left dashboard-lastfm-user-container">
+                        <div class="dashboard-lastfm-user-header" style="background-color:#e01b23">
+                            <% var song = user.tracks[0] %>
+                            <% if (user.user.image[0]['#text'].length) { %>
+                                <img src="<%= user.user.image[0]['#text'] %>"/>
+                            <% } else { %>
+                                <img src="http://img1.wikia.nocookie.net/__cb20130411230808/logopedia/images/1/1d/Last_fm_logo.png"/>
+                            <% } %>
+                            <%= user.user.realname %>
+                        </div>
+                        <div class="dashboard-lastfm-user-art" style="background-color:#b42024;">
+                            <% if (song.image[3]['#text'].length) { %>
+                                <img src="<%= song.image[3]['#text'] %>"/>
+                            <% } else { %>
+                                <img src="http://img1.wikia.nocookie.net/__cb20130411230808/logopedia/images/1/1d/Last_fm_logo.png"/>
+                            <% } %>
+                            <div class="text-center clearfix"><%= song.artist['#text'] %></div>
+                            <div class="text-center clearfix">&quot;<%= song.name %>&quot;</div>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="pull-left dashboard-lastfm-user-container">
+                        <div class="dashboard-lastfm-user-header" style="background-color:#e01b23">
+                            <%= userID %>
+                        </div>
+                        <div class="dashboard-lastfm-user-art" style="background-color:#b42024;">
+                            <img src="http://img1.wikia.nocookie.net/__cb20130411230808/logopedia/images/1/1d/Last_fm_logo.png"/>
+                        </div>
+                    </div>
+                <% } %>
+            <% }); %>
+        </script>
 
         <script type="text/html" id='dashboard-events-feed-template'>
             <ul class="list-group">

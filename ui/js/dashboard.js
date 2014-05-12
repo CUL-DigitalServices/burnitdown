@@ -161,11 +161,58 @@ define(['jquery', 'bd.core', 'underscore', 'timeago', 'highcharts', 'history', '
         });
     };
 
+    var getLastFM = function() {
+        var lastFMUsers = ['bpareyn', 'dis4', 'Coenego'];
+        var userTracksFetched = 0;
+        var userProfilesFetched = 0;
+
+        // Render the event feed
+        var users = {};
+
+        var getLastFMUserProfiles = function() {
+            $.ajax({
+                'url': 'http://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=' + lastFMUsers[userProfilesFetched] + '&api_key=addyourlastfmapikey&format=json',
+                'success': function(data) {
+                    users[lastFMUsers[userProfilesFetched]] = users[lastFMUsers[userProfilesFetched]] || {};
+                    users[lastFMUsers[userProfilesFetched]].user = data.user;
+                    userProfilesFetched++;
+                    if (userProfilesFetched !== lastFMUsers.length) {
+                        getLastFMUserProfiles();
+                    } else {
+                        var template = $('#dashboard-lastfm-template').html();
+                        $('#dashboard-lastfm-container').html(_.template(template, {
+                            'users': users
+                        }));
+                    }
+                }
+            });
+        };
+
+        var getLastFMUserTracks = function() {
+            $.ajax({
+                'url': 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + lastFMUsers[userTracksFetched] + '&api_key=addyourlastfmapikey&format=json',
+                'success': function(data) {
+                    users[lastFMUsers[userTracksFetched]] = users[lastFMUsers[userTracksFetched]] || {};
+                    users[lastFMUsers[userTracksFetched]].tracks = data.recenttracks.track;
+                    userTracksFetched++;
+                    if (userTracksFetched !== lastFMUsers.length) {
+                        getLastFMUserTracks();
+                    } else {
+                        getLastFMUserProfiles();
+                    }
+                }
+            });
+        };
+
+        getLastFMUserTracks();
+    };
+
     /**
      * Set the intervals at which the feeds should refresh
      */
     var setIntervals = function() {
         setInterval(getEvents, 60000); // Get new events every minute
+        setInterval(getEvents, 30000); // Get new LastFM updates every half minute
         setInterval(getIssues, 60000 * 10); // Get new issue data every 10 minutes
     };
 
@@ -177,8 +224,9 @@ define(['jquery', 'bd.core', 'underscore', 'timeago', 'highcharts', 'history', '
         repositories = _.isArray(repositories) ? repositories : [repositories];
         $('#bd-title').text(repositories.join(' | '));
 
-        getIssues();
+        //getIssues();
         getEvents();
+        getLastFM();
         setIntervals();
     };
 
