@@ -1,0 +1,87 @@
+<html>
+<head>
+    <style type="text/css">]
+    td  {
+        padding: 10px;
+    }
+
+    td.row-score {
+        padding-left: 50px;
+    }
+    </style>
+</head>
+<body>
+<table>
+<thead>
+ <th>Name</th>
+ <th>B</th>
+ <th>20</th>
+ <th>19</th>
+ <th>18</th>
+ <th>17</th>
+ <th>16</th>
+ <th>15</th>
+ <th>score</th>
+</thead>
+<tbody>
+</tbody>
+</table>
+<div>
+  <input type="text" name="player-name" id="player-name" />
+  <button value="Add" id='add-player'>Add</button>
+  <button id="start">Start</button>
+</div>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#add-player').on('click', function() {
+        var name = $('#player-name').val();
+        var row = '<tr id="' + name + '">';
+        row += '    <td>' + name + '</td>';
+        row += '    <td data-class="25"><span>0</span> <br /><button>+</button></td>';
+        row += '    <td data-class="20"><span>0</span> <br /><button>+</button></td>';
+        row += '    <td data-class="19"><span>0</span> <br /><button>+</button></td>';
+        row += '    <td data-class="18"><span>0</span> <br /><button>+</button></td>';
+        row += '    <td data-class="17"><span>0</span> <br /><button>+</button></td>';
+        row += '    <td data-class="16"><span>0</span> <br /><button>+</button></td>';
+        row += '    <td data-class="15"><span>0</span> <br /><button>+</button></td>';
+        row += '    <td class="row-score"><span class="score">0</span></td>';
+        row += '</tr>';
+        $('table tbody').append(row);
+        $('#player-name').val('').focus();
+    });
+
+    $('#start').on('click', function() {
+        $('table tbody button').on('click', function() {
+            var $btn = $(this);
+            var $span = $('span', $(this).parent());
+            var scoreInNumber = parseInt($span.text(), 10);
+            if (scoreInNumber < 3) {
+                scoreInNumber++;
+                $span.text(scoreInNumber);
+            } else {
+                // Give other people points
+                $('table tbody tr').each(function() {
+                    var $tr = $(this);
+                    if ($tr.attr('id') === $btn.parent().parent().attr('id')) {
+                        return;
+                    }
+
+                    var dataClass = parseInt($btn.parent().attr('data-class'));
+                    var $col = $('td[data-class=' + dataClass + ']' , $tr);
+                    var playerClassScore = parseInt($('span', $col).text(), 10);
+                    if (playerClassScore !== 3) {
+                        var oldScore = parseInt($('td.row-score span ', $tr).text());
+                        $('td.row-score span ', $tr).text(oldScore + dataClass);
+                    }
+                })
+                
+            }
+
+        })
+    });
+});
+</script>
+</body>
+</html>
