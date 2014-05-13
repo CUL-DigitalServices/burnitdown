@@ -12,7 +12,7 @@
     <body>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-xs-10">
+                <div class="col-xs-9">
                     <h1 id="bd-title" class="text-center"><!-- --></h1>
                     <div id="dashboard-summary-container" class="row text-center">
                         <div class="col-xs-4 dashboard-summary">
@@ -30,7 +30,7 @@
                     </div>
                     <div id="dashboard-issue-chart-container"><!-- --></div>
                 </div>
-                <div id="dashboard-events-feed-container" class="col-xs-2"><!-- --></div>
+                <div id="dashboard-events-feed-container" class="col-xs-3"><!-- --></div>
             </div>
         </div>
 
@@ -91,7 +91,7 @@
                                 </a>
                             </div>
                             <div class="col-xs-10">
-                                <%= ev.user.realname %> <% if (ev.track['@attr'] && ev.track['@attr'].nowplaying === 'true') { %>is listening<% } else { %>listened<% } %> to "<%= ev.track.name %>" by <%= ev.track.artist['#text'] %>
+                                <a href="<%= ev.user.url %>" target="_blank" title="<%= ev.user.realname %>"><%= ev.user.realname %></a> <% if (ev.track['@attr'] && ev.track['@attr'].nowplaying === 'true') { %>is listening<% } else { %>listened<% } %> to "<%= ev.track.name %>" by <%= ev.track.artist['#text'] %>
                                 <% if (!ev.track['@attr'] || ev.track['@attr'].nowplaying !== 'true') { %><small class="clearfix"><%= $.timeago(new Date(ev.displayDate)) %></small><% } %>
                             </div>
                         </li>

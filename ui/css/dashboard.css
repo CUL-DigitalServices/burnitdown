@@ -13,6 +13,10 @@
  * permissions and limitations under the License.
  */
 
+body {
+    font-family: 'Open Sans', arial, helvetica, sans-serif;
+}
+
 #dashboard-summary-container {
     margin-top: 50px;
 }
@@ -45,6 +49,7 @@
 
 #dashboard-events-feed-container .list-group {
     margin: 0;
+    font-size: 16px;
 }
 
 #dashboard-events-feed-container .list-group-item {
