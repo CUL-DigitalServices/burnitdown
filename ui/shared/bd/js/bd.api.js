@@ -27,9 +27,9 @@ define(['bd.api.github', 'bd.api.lastfm', 'bd.api.travis', 'bd.api.util'],
 
         /*!
          * Object containing all of the available OAE API modules and their functions, as well as some
-         * cached data (e.g. me object) that will be passed in when a module adds `oae.api!` as a dependency.
+         * cached data (e.g. me object) that will be passed in when a module adds `bd.api!` as a dependency.
          */
-        var oae = {
+        var bd = {
             'api': {
                 'github': githubAPI,
                 'lastfm': lastfmAPI,
@@ -42,17 +42,17 @@ define(['bd.api.github', 'bd.api.lastfm', 'bd.api.travis', 'bd.api.util'],
         /*!
          * Initialize OAE after all of the API files have loaded. This will first of all fetch the current user's me
          * feed. Then, the localization API and the internationalization API will be initialized with the locale information
-         * that has been found in the me feed. After that, the full `oae` object will be returned to the module that has required
-         * `oae.api!`
+         * that has been found in the me feed. After that, the full `bd` object will be returned to the module that has required
+         * `bd.api!`
          */
         var initDB = function(callback) {
             // Get the github access token
             $.ajax({
-                'url': '/api/token',
+                'url': '/api/tokens',
                 'type': 'GET',
-                'success': function(token) {
-                    oae.data.token = token;
-                    callback(oae);
+                'success': function(tokens) {
+                    bd.data.tokens = tokens;
+                    callback(bd);
                 }
             });
         };

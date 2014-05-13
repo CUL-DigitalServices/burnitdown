@@ -36,3 +36,7 @@ config.oauth = {
     'callbackURI': '/callback',
     'scope': 'noscope'
 };
+
+config.lastfm = {
+    'lastfmKey': 'key'
+};

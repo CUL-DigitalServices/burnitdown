@@ -91,8 +91,8 @@
                                 </a>
                             </div>
                             <div class="col-xs-10">
-                                <%= ev.user.realname %> listened to "<%= ev.track.name %>" by <%= ev.track.artist['#text'] %>
-                                <small class="clearfix"><%= $.timeago(new Date(ev.displayDate)) %></small>
+                                <%= ev.user.realname %> <% if (ev.track['@attr'] && ev.track['@attr'].nowplaying === 'true') { %>is listening<% } else { %>listened<% } %> to "<%= ev.track.name %>" by <%= ev.track.artist['#text'] %>
+                                <% if (!ev.track['@attr'] || ev.track['@attr'].nowplaying !== 'true') { %><small class="clearfix"><%= $.timeago(new Date(ev.displayDate)) %></small><% } %>
                             </div>
                         </li>
                     <% } else if (ev.type === 'build-event') { %>

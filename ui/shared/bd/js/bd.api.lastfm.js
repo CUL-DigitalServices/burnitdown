@@ -15,14 +15,24 @@
 
 define(['exports', 'jquery'], function(exports, $) {
 
+    /**
+     * [parseLastFMTracksIntoEventFeed description]
+     *
+     * @param  {[type]}   lastfm   [description]
+     * @param  {Function} callback [description]
+     *
+     * @return {[type]}            [description]
+     */
     var parseLastFMTracksIntoEventFeed = exports.parseLastFMTracksIntoEventFeed = function(lastfm, callback) {
         var lastFMFeed = [];
         _.each(lastfm, function(lastfmObj, lastfmObjID) {
-            console.log(lastfmObj);
             _.each(lastfmObj.tracks, function(track, trackID) {
                 var displayDate = Date.now();
                 if (!track['@attr']) {
-                    displayDate = new Date(track.date['#text']);
+                    var playDate = new Date(track.date['#text']);
+                    var offsetHours = playDate.getTimezoneOffset() / 60;
+                    var l10nTime = playDate.setHours(playDate.getHours() - (offsetHours));
+                    displayDate = l10nTime;
                 }
                 lastFMFeed.push({
                     'user': lastfmObj.user,
@@ -35,17 +45,29 @@ define(['exports', 'jquery'], function(exports, $) {
         callback(null, lastFMFeed);
     };
 
+    /**
+     * [getLastFMTracks description]
+     *
+     * @param  {Function} callback [description]
+     *
+     * @return {[type]}            [description]
+     */
     var getLastFMTracks = exports.getLastFMTracks = function(callback) {
-        var lastFMUsers = ['bpareyn', 'dis4', 'Coenego'];
+        var lastFMUsers = ['bpareyn', 'dis4', 'Coenego', 'timdegroote'];
         var userTracksFetched = 0;
         var userProfilesFetched = 0;
 
         // Render the event feed
         var userTracks = {};
 
+        /**
+         * [getLastFMUserProfiles description]
+         *
+         * @return {[type]} [description]
+         */
         var getLastFMUserProfiles = function() {
             $.ajax({
-                'url': 'http://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=' + lastFMUsers[userProfilesFetched] + '&api_key=lastfmkey&format=json',
+                'url': 'http://ws.audioscrobbler.com/2.0/?method=user.getinfo&user=' + lastFMUsers[userProfilesFetched] + '&api_key=' + require('bd.core').data.tokens.lastfmKey + '&format=json',
                 'success': function(data) {
                     userTracks[lastFMUsers[userProfilesFetched]] = userTracks[lastFMUsers[userProfilesFetched]] || {};
                     userTracks[lastFMUsers[userProfilesFetched]].user = data.user;
@@ -59,9 +81,14 @@ define(['exports', 'jquery'], function(exports, $) {
             });
         };
 
+        /**
+         * [getLastFMUserTracks description]
+         *
+         * @return {[type]} [description]
+         */
         var getLastFMUserTracks = function() {
             $.ajax({
-                'url': 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + lastFMUsers[userTracksFetched] + '&api_key=lastfmkey&format=json',
+                'url': 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + lastFMUsers[userTracksFetched] + '&api_key=' + require('bd.core').data.tokens.lastfmKey + '&format=json',
                 'success': function(data) {
                     userTracks[lastFMUsers[userTracksFetched]] = userTracks[lastFMUsers[userTracksFetched]] || {};
                     userTracks[lastFMUsers[userTracksFetched]].tracks = data.recenttracks.track;

@@ -112,7 +112,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
                 'sort': 'created'
             },
             'headers': {
-                'Authorization': 'token ' + require('bd.core').data.token
+                'Authorization': 'token ' + require('bd.core').data.tokens.githubToken
             },
             'success': function(issueCommentEvents) {
                 $.each(issueCommentEvents, function(issueCommentEventIndex, issueCommentEvent) {
@@ -142,7 +142,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
                 'sort': 'created'
             },
             'headers': {
-                'Authorization': 'token ' + require('bd.core').data.token
+                'Authorization': 'token ' + require('bd.core').data.tokens.githubToken
             },
             'success': function(pullCommentEvents) {
                 $.each(pullCommentEvents, function(pullCommentEventIndex, pullCommentEvent) {
@@ -167,7 +167,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
             'url': 'https://api.github.com/repos/' + user + '/' + project + '/issues/events',
             'method': 'GET',
             'headers': {
-                'Authorization': 'token ' + require('bd.core').data.token
+                'Authorization': 'token ' + require('bd.core').data.tokens.githubToken
             },
             'success': function(issueEvents) {
                 // Filter out `subscribed` and `assigned` events, as they are covered
@@ -238,7 +238,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
                     'state': 'closed'
                 },
                 'headers': {
-                    'Authorization': 'token ' + require('bd.core').data.token
+                    'Authorization': 'token ' + require('bd.core').data.tokens.githubToken
                 },
                 'success': function(data) {
                     if (data.length) {
@@ -319,7 +319,7 @@ define(['exports', 'jquery', 'markdown'], function(exports, $) {
                     'state': 'open'
                 },
                 'headers': {
-                    'Authorization': 'token ' + require('bd.core').data.token
+                    'Authorization': 'token ' + require('bd.core').data.tokens.githubToken
                 },
                 'success': function(data) {
                     if (data.length) {

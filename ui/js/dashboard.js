@@ -42,6 +42,7 @@ define(['jquery', 'bd.core', 'underscore', 'timeago', 'highcharts', 'history', '
                         return console.error('Error retrieving Last.fm feed');
                     }
 
+                    // Get the Last.fm feed
                     bd.api.lastfm.parseLastFMTracksIntoEventFeed(lastfm, function(err, lastfmEvents) {
                         if (err) {
                             return console.error('Error parsing the Last.fm feed');
