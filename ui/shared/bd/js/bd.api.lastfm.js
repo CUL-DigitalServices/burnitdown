@@ -53,7 +53,7 @@ define(['exports', 'jquery'], function(exports, $) {
      * @return {[type]}            [description]
      */
     var getLastFMTracks = exports.getLastFMTracks = function(callback) {
-        var lastFMUsers = ['bpareyn', 'dis4', 'Coenego', 'timdegroote'];
+        var lastFMUsers = ['bpareyn', 'dis4', 'Coenego', 'timdegroote', 'MrVisser'];
         var userTracksFetched = 0;
         var userProfilesFetched = 0;
 
