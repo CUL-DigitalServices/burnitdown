@@ -28,54 +28,17 @@
                             <div id="bd-circle-closed" class="bd-circle"><!-- --></div>
                         </div>
                     </div>
-                    <div id="dashboard-lastfm-container"></div>
                     <div id="dashboard-issue-chart-container"><!-- --></div>
                 </div>
                 <div id="dashboard-events-feed-container" class="col-xs-2"><!-- --></div>
             </div>
         </div>
 
-        <script type="text/html" id="dashboard-lastfm-template">
-            <% _.each(users, function(user, userID) { %>
-                <% if (user !== undefined) { %>
-                    <div class="pull-left dashboard-lastfm-user-container">
-                        <div class="dashboard-lastfm-user-header" style="background-color:#e01b23">
-                            <% var song = user.tracks[0] %>
-                            <% if (user.user.image[0]['#text'].length) { %>
-                                <img src="<%= user.user.image[0]['#text'] %>"/>
-                            <% } else { %>
-                                <img src="http://img1.wikia.nocookie.net/__cb20130411230808/logopedia/images/1/1d/Last_fm_logo.png"/>
-                            <% } %>
-                            <%= user.user.realname %>
-                        </div>
-                        <div class="dashboard-lastfm-user-art" style="background-color:#b42024;">
-                            <% if (song.image[3]['#text'].length) { %>
-                                <img src="<%= song.image[3]['#text'] %>"/>
-                            <% } else { %>
-                                <img src="http://img1.wikia.nocookie.net/__cb20130411230808/logopedia/images/1/1d/Last_fm_logo.png"/>
-                            <% } %>
-                            <div class="text-center clearfix"><%= song.artist['#text'] %></div>
-                            <div class="text-center clearfix">&quot;<%= song.name %>&quot;</div>
-                        </div>
-                    </div>
-                <% } else { %>
-                    <div class="pull-left dashboard-lastfm-user-container">
-                        <div class="dashboard-lastfm-user-header" style="background-color:#e01b23">
-                            <%= userID %>
-                        </div>
-                        <div class="dashboard-lastfm-user-art" style="background-color:#b42024;">
-                            <img src="http://img1.wikia.nocookie.net/__cb20130411230808/logopedia/images/1/1d/Last_fm_logo.png"/>
-                        </div>
-                    </div>
-                <% } %>
-            <% }); %>
-        </script>
-
         <script type="text/html" id='dashboard-events-feed-template'>
             <ul class="list-group">
                 <% _.each(events, function(ev, index) { %>
                     <% if (ev.type === 'pull-comment-event') { %>
-                        <li class="row list-group-item clearfix">
+                        <li class="row list-group-item clearfix pull-comment-event">
                             <div class="col-xs-2">
                                 <a href="<%= ev.user.html_url %>" target="_blank" title="<%= ev.user.login %>">
                                     <img class="dashboard-feed-thumbnail" src="<%= ev.user.avatar_url %>" alt="<%= ev.user.login %>"/>
@@ -90,7 +53,7 @@
                             </div>
                         </li>
                     <% } else if (ev.type === 'issue-comment-event') { %>
-                        <li class="row list-group-item clearfix">
+                        <li class="row list-group-item clearfix issue-comment-event">
                             <div class="col-xs-2">
                                 <a href="<%= ev.user.html_url %>" target="_blank" title="<%= ev.user.login %>">
                                     <img class="dashboard-feed-thumbnail" src="<%= ev.user.avatar_url %>" alt="<%= ev.user.login %>"/>
@@ -105,7 +68,7 @@
                             </div>
                         </li>
                     <% } else if (ev.type === 'issue-event') { %>
-                        <li class="row list-group-item clearfix">
+                        <li class="row list-group-item clearfix issue-event">
                             <div class="col-xs-2">
                                 <a href="<%= ev.actor.html_url %>" target="_blank" title="<%= ev.actor.login %>">
                                     <img class="dashboard-feed-thumbnail pull-left" src="<%= ev.actor.avatar_url %>" alt="<%= ev.actor.login %>"/>
@@ -116,8 +79,24 @@
                                 <small class="clearfix"><%= $.timeago(new Date(ev.created_at)) %></small>
                             </div>
                         </li>
+                    <% } else if (ev.type === 'lastfm-event') { %>
+                        <li class="row list-group-item clearfix lastfm-event">
+                            <div class="col-xs-2">
+                                <a href="<%= ev.user.url %>" target="_blank" title="<%= ev.user.realname %>">
+                                    <% if (ev.user.image[0]['#text'].length) { %>
+                                        <img class="dashboard-feed-thumbnail" src="<%= ev.user.image[0]['#text'] %>"/>
+                                    <% } else { %>
+                                        <img class="dashboard-feed-thumbnail" src="http://img1.wikia.nocookie.net/__cb20130411230808/logopedia/images/1/1d/Last_fm_logo.png"/>
+                                    <% } %>
+                                </a>
+                            </div>
+                            <div class="col-xs-10">
+                                <%= ev.user.realname %> listened to "<%= ev.track.name %>" by <%= ev.track.artist['#text'] %>
+                                <small class="clearfix"><%= $.timeago(new Date(ev.displayDate)) %></small>
+                            </div>
+                        </li>
                     <% } else if (ev.type === 'build-event') { %>
-                        <li class="row list-group-item clearfix dashboard-travis-<%= ev.state %>">
+                        <li class="row list-group-item clearfix dashboard-travis-<%= ev.state %> build-event">
                             <div class="col-xs-2">
                                 <img class="dashboard-feed-thumbnail pull-left" src="https://travis-ci.com/img/travis-mascot-200px.png" alt="Travis CI"/>
                             </div>

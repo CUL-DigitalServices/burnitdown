@@ -52,6 +52,13 @@
     border-right: none;
 }
 
+#dashboard-events-feed-container .list-group-item.issue-comment-event,
+#dashboard-events-feed-container .list-group-item.issue-event,
+#dashboard-events-feed-container .list-group-item.pull-comment-event {
+    background-color: #d2E4F9;
+    border-color: #d2E4F9;
+}
+
 #dashboard-events-feed-container .list-group-item:first-child,
 #dashboard-events-feed-container .list-group-item:last-child {
     -webkit- border-radius: 0;
@@ -109,30 +116,4 @@
 #dashboard-issue-chart-container {
     max-height: 500px;
     margin: 50px 0;
-}
-
-.dashboard-lastfm-user-header img {
-    height: 35px;
-    width: 35px;
-}
-
-.dashboard-lastfm-user-container {
-    width: 220px;
-    margin: 1px;
-}
-
-.dashboard-lastfm-user-art img {
-    height: 200px;
-    width: 200px;
-}
-
-.dashboard-lastfm-user-art,
-.dashboard-lastfm-user-header {
-    color: #FFF;
-    padding: 10px;
-    background: #e21b23; /* Old browsers */
-    background: -moz-linear-gradient(top,  #e21b23 0%, #b42024 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e21b23), color-stop(100%,#b42024)); /* Chrome,Safari4+ */
-    background: -ms-linear-gradient(top,  #e21b23 0%,#b42024 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #e21b23 0%,#b42024 100%); /* W3C */
 }
